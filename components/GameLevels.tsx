@@ -107,7 +107,7 @@ const FloatingText = ({ items }: { items: { id: number, x: number, y: number, te
 };
 
 // --- VERSE ASSEMBLER COMPONENT ---
-const VerseAssembler = ({ question, onComplete }: { question: Question, onComplete: (score: number) => void }) => {
+const VerseAssembler = ({ question, onComplete }: { question: Question, onComplete: (result: any) => void }) => {
     const [scrambled, setScrambled] = useState<string[]>([]);
     const [assembled, setAssembled] = useState<string[]>([]);
     const [timeLeft, setTimeLeft] = useState(60);
@@ -145,15 +145,13 @@ const VerseAssembler = ({ question, onComplete }: { question: Question, onComple
     const checkAnswer = (timeout = false) => {
         setIsChecking(true);
         const isCorrect = assembled.join('') === question.options.join('');
-        // Fixed score: 20 points per question logic (scaled for single assembler game if needed, keeping 100 for assembler for now or 20)
-        // Since Assembler is usually a single "level", let's make it 100 to pass immediately if correct.
         const score = isCorrect ? 100 : 0; 
         
         if (isCorrect) sfx.win();
         else sfx.error();
 
         setTimeout(() => {
-            onComplete(score);
+            onComplete({ score: score, correct: isCorrect ? 1 : 0, wrong: isCorrect ? 0 : 1 });
         }, 2000);
     };
 
@@ -216,8 +214,14 @@ export const UniversalLevelEngine = ({ data, user, levelId, levelType, onComplet
   const [totalScore, setTotalScore] = useState(0);
   const [floatingScores, setFloatingScores] = useState<{id: number, x: number, y: number, text: string}[]>([]);
   
+  // Stats tracking
+  const [correctCount, setCorrectCount] = useState(0);
+  const [wrongCount, setWrongCount] = useState(0);
+  
   // UseRef to ensure score persistence across timer closures
   const scoreRef = useRef(0);
+  const correctRef = useRef(0);
+  const wrongRef = useRef(0);
   
   // RAPID FIRE STATES
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -287,11 +291,9 @@ export const UniversalLevelEngine = ({ data, user, levelId, levelType, onComplet
     return () => clearInterval(timerRef.current);
   }, [qIndex, levelType]);
 
-  const handleLevelComplete = (addedScore: number) => {
-      // Verse Assembler handler
-      const finalScore = scoreRef.current + addedScore;
-      scoreRef.current = finalScore;
-      onComplete(finalScore);
+  const handleVerseComplete = (result: any) => {
+      scoreRef.current = result.score;
+      onComplete(result);
   };
 
   const handleGlobalClick = (e: React.MouseEvent) => {
@@ -335,23 +337,29 @@ export const UniversalLevelEngine = ({ data, user, levelId, levelType, onComplet
 
     if (isCorrect) {
         sfx.hit();
-        // FIXED SCORE: 20 points per question
-        scoreGain = 20;
+        scoreGain = 10; // 10 points per question (Total 100 for 10 questions)
         
         // Trigger Floating Text
-        const newFloat = { id: Date.now(), x: clickX, y: clickY, text: "+20" };
+        const newFloat = { id: Date.now(), x: clickX, y: clickY, text: "+10" };
         setFloatingScores(prev => [...prev, newFloat]);
         setTimeout(() => {
              setFloatingScores(prev => prev.filter(f => f.id !== newFloat.id));
         }, 1000);
+        
+        correctRef.current += 1;
+        setCorrectCount(prev => prev + 1);
 
     } else if (idx !== -1) { // Only play error if not timeout (-1)
         sfx.error();
-        // CALL ON DAMAGE FOR VISUAL HP LOSS, BUT DON'T STOP GAME HERE
+        // CALL ON DAMAGE FOR VISUAL HP LOSS
         onDamage({ question: currentQ.text, correct: currentQ.options[currentQ.correctIndex] });
+        wrongRef.current += 1;
+        setWrongCount(prev => prev + 1);
     } else {
         // TIMEOUT
         onDamage({ question: currentQ.text, correct: currentQ.options[currentQ.correctIndex] });
+        wrongRef.current += 1;
+        setWrongCount(prev => prev + 1);
     }
 
     // UPDATE SCORE STATE
@@ -368,8 +376,12 @@ export const UniversalLevelEngine = ({ data, user, levelId, levelType, onComplet
             setQIndex(prev => prev + 1);
         } else {
             // FINISH LEVEL
-            // Pass the value from ref to guarantee latest score
-            onComplete(scoreRef.current); 
+            // Pass object with stats
+            onComplete({ 
+                score: scoreRef.current, 
+                correct: correctRef.current, 
+                wrong: wrongRef.current 
+            }); 
         }
     }, 1200);
   };
@@ -378,7 +390,7 @@ export const UniversalLevelEngine = ({ data, user, levelId, levelType, onComplet
       return (
           <>
             <TopHUD user={user} score={totalScore} timeLeft={0} />
-            <VerseAssembler question={currentQ} onComplete={handleLevelComplete} />
+            <VerseAssembler question={currentQ} onComplete={handleVerseComplete} />
           </>
       );
   }

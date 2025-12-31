@@ -5,7 +5,7 @@ import {
 } from './constants';
 import { TacticalButton, Panel, RankBadge, HealthBar } from './components/UI';
 import { UniversalLevelEngine } from './components/GameLevels';
-import { Shield, ChevronLeft, Star, Award, Lock, Play, Skull, ScrollText, Target, Crosshair, Swords, Brain, Zap, Loader2, RefreshCw, Radio, FileText, ChevronRight, GraduationCap, Image as ImageIcon, Volume2, Pause, SkipForward, SkipBack, Info, Fingerprint, FileCheck, CheckCircle2, School, MousePointer2, Clock, AlertTriangle, XCircle, RotateCcw, MessageSquare, Trophy, Home, DoorOpen, Sparkles, BookOpen, LayoutGrid, Crown, Map as MapIcon } from 'lucide-react';
+import { Shield, ChevronLeft, Star, Award, Lock, Play, Skull, ScrollText, Target, Crosshair, Swords, Brain, Zap, Loader2, RefreshCw, Radio, FileText, ChevronRight, GraduationCap, Image as ImageIcon, Volume2, Pause, SkipForward, SkipBack, Info, Fingerprint, FileCheck, CheckCircle2, School, MousePointer2, Clock, AlertTriangle, XCircle, RotateCcw, MessageSquare, Trophy, Home, DoorOpen, Sparkles, BookOpen, LayoutGrid, Crown, Map as MapIcon, ClipboardList } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { sfx } from './audio';
 
@@ -55,6 +55,67 @@ const GlobalFooter = () => (
     <img src="https://iili.io/fcTD21f.png" alt="Logo" className="h-5 md:h-7 w-auto drop-shadow-[0_0_5px_rgba(255,255,255,0.2)]" />
   </div>
 );
+
+// --- SCORE REPORT COMPONENT (RAPOR) ---
+const ScoreReportScreen = ({ result, onContinue, onRetry }: { result: { score: number, correct: number, wrong: number }, onContinue: () => void, onRetry: () => void }) => {
+    // Determine Grade
+    const getGrade = (score: number) => {
+        if (score >= 90) return { label: 'A', color: 'text-green-400', msg: 'SANGAT MEMUASKAN' };
+        if (score >= 70) return { label: 'B', color: 'text-yellow-400', msg: 'BAIK' };
+        if (score >= 50) return { label: 'C', color: 'text-orange-400', msg: 'CUKUP' };
+        return { label: 'D', color: 'text-red-500', msg: 'PERLU BELAJAR' };
+    };
+    
+    const grade = getGrade(result.score);
+
+    return (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/90 backdrop-blur-sm p-4">
+            <Panel className="w-full max-w-lg border-2 border-yellow-500 animate-in zoom-in duration-300">
+                <div className="text-center mb-6">
+                    <div className="w-16 h-16 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-2 border-2 border-yellow-500">
+                        <ClipboardList className="text-yellow-500 w-8 h-8" />
+                    </div>
+                    <h2 className="text-3xl font-ops text-white uppercase tracking-wider">RAPOR MISI</h2>
+                    <div className="h-1 w-20 bg-yellow-500 mx-auto mt-2"></div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                    <div className="bg-slate-800 p-4 rounded text-center border border-slate-700">
+                        <div className="text-xs text-slate-400 font-mono mb-1 uppercase">Total Skor</div>
+                        <div className={`text-4xl font-ops ${grade.color}`}>{result.score}</div>
+                    </div>
+                    <div className="bg-slate-800 p-4 rounded text-center border border-slate-700">
+                         <div className="text-xs text-slate-400 font-mono mb-1 uppercase">Peringkat</div>
+                         <div className={`text-4xl font-ops ${grade.color}`}>{grade.label}</div>
+                    </div>
+                </div>
+
+                <div className="bg-slate-900/50 p-4 rounded mb-8 border border-slate-700">
+                     <div className="flex justify-between items-center mb-2 border-b border-slate-700 pb-2">
+                         <span className="text-slate-300 flex items-center gap-2"><CheckCircle2 size={16} className="text-green-500"/> Jawaban Benar</span>
+                         <span className="text-white font-mono text-xl">{result.correct}</span>
+                     </div>
+                     <div className="flex justify-between items-center mb-2 border-b border-slate-700 pb-2">
+                         <span className="text-slate-300 flex items-center gap-2"><XCircle size={16} className="text-red-500"/> Jawaban Salah</span>
+                         <span className="text-white font-mono text-xl">{result.wrong}</span>
+                     </div>
+                     <div className="text-center mt-4">
+                         <span className={`text-sm font-mono tracking-widest ${grade.color}`}>{grade.msg}</span>
+                     </div>
+                </div>
+
+                <div className="flex gap-4">
+                    <button onClick={onRetry} className="flex-1 bg-slate-700 hover:bg-slate-600 text-white py-3 rounded font-ops uppercase border-b-4 border-slate-900 active:border-b-0 active:translate-y-1 transition-all">
+                        ULANGI
+                    </button>
+                    <button onClick={onContinue} className="flex-1 bg-yellow-600 hover:bg-yellow-500 text-black py-3 rounded font-ops uppercase border-b-4 border-yellow-800 active:border-b-0 active:translate-y-1 transition-all">
+                        SELESAI
+                    </button>
+                </div>
+            </Panel>
+        </div>
+    );
+};
 
 // --- GALLERY COMPONENT ---
 
@@ -207,13 +268,13 @@ const VictoryGate = ({ onContinue }: { onContinue: () => void }) => {
                       <Trophy className="w-24 h-24 md:w-32 md:h-32 text-yellow-900 mx-auto mb-6 drop-shadow-[0_0_15px_rgba(255,255,255,0.8)] animate-bounce" fill="currentColor" />
                       
                       <h1 className="text-4xl md:text-7xl font-ops text-white mb-2 uppercase drop-shadow-xl tracking-widest text-stroke-gold">
-                          LUAR BIASA!
+                          MISI SELESAI!
                       </h1>
                       <div className="h-1 w-32 bg-white mx-auto mb-6 shadow-[0_0_10px_white]"></div>
                       
                       <div className="max-w-2xl mx-auto bg-black/60 backdrop-blur-sm p-6 md:p-8 border-y-2 border-yellow-400 mb-8 rounded-xl">
                           <p className="font-serif italic text-lg md:text-2xl text-yellow-100 leading-relaxed">
-                              "Kamu telah menaklukkan tantangan ini dengan sempurna! Teruslah belajar untuk meraih mimpi setinggi langit."
+                              "Data berhasil dikumpulkan. Mari kita lihat hasil analisismu."
                           </p>
                       </div>
 
@@ -222,7 +283,7 @@ const VictoryGate = ({ onContinue }: { onContinue: () => void }) => {
                         className="group relative px-8 py-4 bg-yellow-500 text-black font-ops text-xl uppercase tracking-widest hover:bg-yellow-400 transition-all hover:scale-105 shadow-[0_0_30px_rgba(234,179,8,0.6)] rounded-lg overflow-hidden"
                       >
                           <span className="relative z-10 flex items-center gap-2">
-                             <Award size={24} /> KEMBALI KE MENU
+                             <Award size={24} /> LIHAT HASIL
                           </span>
                           <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-20 transition-opacity"></div>
                       </button>
@@ -602,7 +663,7 @@ const MapScreen = ({ user, onLogout, onStartLevel, onGallery }: { user: UserProf
 
 // --- GAMEPLAY WRAPPER ---
 
-const GameplayScreen = ({ user, levelId, onComplete, onExit }: { user: UserProfile, levelId: number, onComplete: (score: number) => void, onExit: () => void }) => {
+const GameplayScreen = ({ user, levelId, onComplete, onExit }: { user: UserProfile, levelId: number, onComplete: (result: any) => void, onExit: () => void }) => {
     const levelConfig = LEVEL_CONFIGS.find(l => l.id === levelId);
     // Use the difficulty selected by user to fetch data
     const levelData = GAME_DATA[user.difficulty][levelId];
@@ -624,16 +685,15 @@ const GameplayScreen = ({ user, levelId, onComplete, onExit }: { user: UserProfi
         // Damage logic: Easy -10, Medium -20, Hard -30
         const dmg = user.difficulty === Difficulty.EASY ? 10 : user.difficulty === Difficulty.MEDIUM ? 20 : 30;
         const nextHp = currentHp - dmg;
-        setCurrentHp(nextHp);
+        
+        // Prevent negative HP but DO NOT EXIT GAME. Just keep it at 0.
+        setCurrentHp(Math.max(0, nextHp));
+        
         setShowDamage(true);
         setTimeout(() => setShowDamage(false), 300);
 
-        if (nextHp <= 0) {
-            // Game Over logic could go here, for now just exit or fail
-            // We can treat 0 HP as exit for simplicity in this snippet
-            sfx.error();
-            onExit(); 
-        }
+        // REMOVED EARLY EXIT LOGIC so players can finish all 10 questions.
+        // if (nextHp <= 0) { sfx.error(); onExit(); }
     };
 
     return (
@@ -668,7 +728,7 @@ export default function App() {
   const [screen, setScreen] = useState<ScreenState>(ScreenState.TITLE);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [currentLevelId, setCurrentLevelId] = useState<number>(1);
-  const [lastScore, setLastScore] = useState(0);
+  const [lastGameResult, setLastGameResult] = useState<{score: number, correct: number, wrong: number} | null>(null);
 
   // Initialize Audio Context on first interaction if needed
   useEffect(() => {
@@ -708,19 +768,19 @@ export default function App() {
       }
   };
 
-  const handleLevelComplete = (score: number) => {
+  const handleLevelComplete = (result: { score: number, correct: number, wrong: number }) => {
       if (user && currentLevelId) {
-          const newScore = user.score + score;
+          const newScore = user.score + result.score;
           const nextLevel = currentLevelId + 1;
           
           setUser({
               ...user,
               score: newScore,
-              lastScore: score,
+              lastScore: result.score,
               levelProgress: Math.max(user.levelProgress, nextLevel)
           });
           
-          setLastScore(score);
+          setLastGameResult(result);
           setScreen(ScreenState.REWARD);
       }
   };
@@ -758,7 +818,21 @@ export default function App() {
                 />
             ) : null;
         case ScreenState.REWARD:
-            return <VictoryGate onContinue={() => setScreen(ScreenState.MAP)} />;
+            return <VictoryGate onContinue={() => setScreen(ScreenState.EVALUATION)} />;
+        case ScreenState.EVALUATION:
+            return lastGameResult ? (
+                <ScoreReportScreen 
+                    result={lastGameResult} 
+                    onContinue={() => {
+                        setScreen(ScreenState.MAP);
+                        setLastGameResult(null);
+                    }}
+                    onRetry={() => {
+                        setScreen(ScreenState.GAMEPLAY);
+                        setLastGameResult(null);
+                    }}
+                /> 
+            ) : <MapScreen user={user!} onLogout={() => {}} onStartLevel={() => {}} onGallery={() => {}} />;
         case ScreenState.GALLERY:
             return <GalleryScreen onBack={() => setScreen(user && user.characterId ? ScreenState.MAP : ScreenState.DIFFICULTY_SELECT)} />;
         default:
