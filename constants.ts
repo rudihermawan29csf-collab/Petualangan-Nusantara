@@ -41,12 +41,12 @@ const getAIImage = (prompt: string, seedId: string) => {
     return `https://tse2.mm.bing.net/th?q=${encodeURIComponent(query)}&w=800&h=600&c=7&rs=1`;
 };
 
-// BACKGROUND NUANSA NUSANTARA
+// BACKGROUND NUANSA NUSANTARA (Updated to Bing Proxy for reliability)
 export const RANDOM_BACKGROUNDS = [
-  "https://iili.io/2uRJleR.jpg", // Candi Borobudur Landscape
-  "https://iili.io/2uRJ0np.jpg", // Bali Rice Terrace
-  "https://iili.io/2uRJujs.jpg", // Wayang Gunungan Texture
-  "https://iili.io/2uRJXxt.jpg", // Batik Mega Mendung Pattern
+  "https://tse2.mm.bing.net/th?q=Candi+Borobudur+Sunrise+Landscape+Wallpaper+HD&w=1920&h=1080&c=7&rs=1", // Candi Borobudur Landscape
+  "https://tse2.mm.bing.net/th?q=Bali+Tegalalang+Rice+Terrace+Wallpaper+HD&w=1920&h=1080&c=7&rs=1", // Bali Rice Terrace
+  "https://tse2.mm.bing.net/th?q=Wayang+Kulit+Gunungan+Art+Wallpaper&w=1920&h=1080&c=7&rs=1", // Wayang Gunungan Texture
+  "https://tse2.mm.bing.net/th?q=Batik+Mega+Mendung+Blue+Pattern+Wallpaper&w=1920&h=1080&c=7&rs=1", // Batik Mega Mendung Pattern
 ];
 
 // DATA GALERI JALAN-JALAN NUSANTARA (30 Slide)

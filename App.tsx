@@ -266,7 +266,7 @@ const TitleScreen = ({ onStart }: { onStart: () => void }) => {
     <div className="h-[100dvh] w-full flex flex-col items-center justify-center relative overflow-hidden">
       <div 
         className="absolute inset-0 bg-cover bg-center z-0 scale-105 animate-[pulse_10s_ease-in-out_infinite]"
-        style={{ backgroundImage: "url('https://iili.io/2uRJXxt.jpg')" }} 
+        style={{ backgroundImage: `url('${RANDOM_BACKGROUNDS[3]}')` }} 
       ></div>
       <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/80 z-0"></div>
       <div className="scanlines"></div>
@@ -323,7 +323,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (name: string, school: string) => v
 
   return (
     <div className="h-[100dvh] w-full flex items-center justify-center bg-slate-900 relative overflow-hidden px-4">
-      <div className="absolute inset-0 bg-cover bg-center z-0 opacity-50" style={{ backgroundImage: "url('https://iili.io/2uRJ0np.jpg')" }}></div>
+      <div className="absolute inset-0 bg-cover bg-center z-0 opacity-50" style={{ backgroundImage: `url('${RANDOM_BACKGROUNDS[1]}')` }}></div>
       <Panel className="w-full max-w-md z-10 border-t-4 border-t-yellow-500 shadow-2xl bg-slate-950/90 backdrop-blur-xl p-6">
         <div className="flex justify-center mb-4">
             <Fingerprint className="text-yellow-500 w-12 h-12 animate-pulse" />
@@ -353,7 +353,7 @@ const LoginScreen = ({ onLogin }: { onLogin: (name: string, school: string) => v
 
 const MissionObjectiveScreen = ({ onNext }: { onNext: () => void }) => (
   <div className="h-[100dvh] w-full bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-    <div className="absolute inset-0 bg-[url('https://iili.io/2uRJujs.jpg')] bg-cover opacity-20"></div>
+    <div className="absolute inset-0 bg-cover opacity-20" style={{ backgroundImage: `url('${RANDOM_BACKGROUNDS[2]}')` }}></div>
     <Panel className="max-w-2xl w-full relative z-10 animate-in fade-in zoom-in duration-500">
       <div className="text-center mb-6">
         <ScrollText className="w-16 h-16 text-yellow-500 mx-auto mb-4" />
@@ -417,7 +417,7 @@ const GameTutorialScreen = ({ onNext }: { onNext: () => void }) => (
         </TacticalButton>
       </div>
       <div className="relative h-64 md:h-full bg-black border border-slate-700 rounded-lg overflow-hidden flex items-center justify-center group">
-         <div className="absolute inset-0 bg-[url('https://iili.io/2uRJleR.jpg')] bg-cover opacity-50"></div>
+         <div className="absolute inset-0 bg-cover opacity-50" style={{ backgroundImage: `url('${RANDOM_BACKGROUNDS[0]}')` }}></div>
          <div className="relative z-10 text-center">
             <Crosshair className="w-24 h-24 text-white/20 mx-auto animate-spin-slow" />
             <p className="text-xs font-mono text-cyan-400 mt-2 animate-pulse">SYSTEM SIMULATION...</p>
@@ -429,7 +429,7 @@ const GameTutorialScreen = ({ onNext }: { onNext: () => void }) => (
 
 const DifficultySelectScreen = ({ onSelect, onGallery }: { onSelect: (d: Difficulty) => void, onGallery: () => void }) => (
   <div className="h-[100dvh] w-full bg-slate-900 flex items-center justify-center p-4 relative overflow-hidden">
-     <div className="absolute inset-0 bg-[url('https://iili.io/2uRJ0np.jpg')] bg-cover opacity-20 blur-sm"></div>
+     <div className="absolute inset-0 bg-cover opacity-20 blur-sm" style={{ backgroundImage: `url('${RANDOM_BACKGROUNDS[1]}')` }}></div>
      <div className="relative z-10 w-full max-w-5xl">
         <h2 className="text-4xl md:text-6xl font-ops text-center text-white mb-8 drop-shadow-lg uppercase tracking-wider">
            Pilih Tingkat Kesulitan
@@ -531,7 +531,7 @@ const MapScreen = ({ user, onLogout, onStartLevel, onGallery }: { user: UserProf
             
             {/* SCROLLABLE GRID CONTAINER */}
             <div className="flex-grow relative w-full overflow-y-auto bg-slate-900 scrollbar-hide p-4 pb-20">
-                <div className="absolute inset-0 bg-cover bg-center opacity-30 brightness-50 fixed pointer-events-none" style={{ backgroundImage: "url('https://iili.io/2uRJujs.jpg')" }}></div>
+                <div className="absolute inset-0 bg-cover bg-center opacity-30 brightness-50 fixed pointer-events-none" style={{ backgroundImage: `url('${RANDOM_BACKGROUNDS[2]}')` }}></div>
                 
                 <div className="relative z-10 max-w-7xl mx-auto">
                     <h2 className="text-white font-ops text-xl md:text-3xl mb-4 text-center uppercase tracking-widest flex items-center justify-center gap-2">
@@ -541,7 +541,8 @@ const MapScreen = ({ user, onLogout, onStartLevel, onGallery }: { user: UserProf
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-6">
                         {LEVEL_CONFIGS.map((level) => {
                             const isBonus = level.type === LevelType.BONUS;
-                            const isLocked = !isBonus && user.levelProgress < level.id;
+                            // UNLOCKED: Players can select all levels freely now
+                            const isLocked = false; 
                             
                             return (
                             <button 
